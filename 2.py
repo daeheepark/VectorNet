@@ -23,8 +23,8 @@ def vecLink(a, polyID, AVTIME):
     type = 0 if a[0, 2] == 'AGENT' else 1
     for i in range(a.shape[0] - 1):
         l, r = a[i], a[i + 1]
-        if type == 1 and (l[0] > AVTIME or r[0] > AVTIME):
-            break
+        # if type == 1 and (l[0] > AVTIME or r[0] > AVTIME):
+        #     break
         now = [l[X_ID], l[Y_ID], r[X_ID], r[Y_ID], type,
                l[0], # time stamp
                r[0],
