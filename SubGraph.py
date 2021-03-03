@@ -105,8 +105,8 @@ class SubGraphLayer(nn.Module):
         batchSize, vNumber, len = x.shape
 
         x = x.permute(1, 0, 2)  # [vNumber, batch size, len]
-
-        mp = x.permute(1, 2, 0)
+ 
+        mp = x.permute(1, 2, 0)  # [batch size, len, vNumber]
         mp = F.max_pool1d(mp, kernel_size=mp.shape[2])  # [batch size, len, 1]
         # print(x.shape)
         # print(mp.shape)

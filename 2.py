@@ -2,9 +2,16 @@ from argoverse.map_representation.map_api import ArgoverseMap
 import pandas as pd
 import numpy as np
 
+from tqdm import tqdm
 
 avm = ArgoverseMap()
 a = avm.build_centerline_index()
+
+'''
+AV - Autonomous Vehicle
+AGENT - The object with most interesting trajectory or track
+OTHERS - Include all the other objects in the scene for which tracks are recorded
+'''
 
 X_ID = 3
 Y_ID = 4
@@ -19,9 +26,9 @@ def vecLink(a, polyID, AVTIME):
         if type == 1 and (l[0] > AVTIME or r[0] > AVTIME):
             break
         now = [l[X_ID], l[Y_ID], r[X_ID], r[Y_ID], type,
-               l[0],
+               l[0], # time stamp
                r[0],
-               np.sqrt(np.square(l[X_ID]-r[X_ID])+np.square(l[Y_ID]-r[Y_ID])) / (r[0]-l[0]),
+               np.sqrt(np.square(l[X_ID]-r[X_ID])+np.square(l[Y_ID]-r[Y_ID])) / (r[0]-l[0]), # moved l2 distance normalized with time difference 
                polyID]
         ans.append(now)
     return ans
@@ -34,12 +41,14 @@ def work(name, file, ooo):
     city = ans[0][-1]
     track_id = 1
 
+    # sort by time 
     id = np.argsort(ans[:, 0], kind='mergesort')
-    tmp = np.zeros_like(ans)
-    for i in range(ans.shape[0]):
+    tmp = np.zeros_like(ans)             
+    for i in range(ans.shape[0]): 
         tmp[i] = ans[id[i]]
-    ans = tmp
+    ans = tmp                 
 
+    # sort by track-id
     id = np.argsort(ans[:, 1], kind='mergesort')
     tmp = np.zeros_like(ans)
     for i in range(ans.shape[0]):
@@ -55,8 +64,8 @@ def work(name, file, ooo):
     for i in range(ans.shape[0]):
         if i + 1 == ans.shape[0] or \
                 ans[i, track_id] != ans[i + 1, track_id]:
-            if ans[i, 2] == 'AGENT':
-                AVX, AVY = ans[i-30, 3], ans[i-30, 4]
+            if ans[i, 2] == 'AGENT': # last timestamp of agent 
+                AVX, AVY = ans[i-30, 3], ans[i-30, 4] # 30 timestamp before last position
                 AVTIME = ans[i-30, 0]
     tmp = []
     j = 0
@@ -79,12 +88,12 @@ def work(name, file, ooo):
 
     for id in idList:
         lane = a[city][id]
-        print(lane.id)
-        print(lane.has_traffic_control)
-        print(lane.turn_direction)
-        print(lane.is_intersection)
-        print(lane.centerline)
-        exit(0)
+        # print(lane.id)
+        # print(lane.has_traffic_control)
+        # print(lane.turn_direction)
+        # print(lane.is_intersection)
+        # print(lane.centerline)
+        # exit(0)
 
         ans = []
         for i in range(lane.centerline.shape[0] - 1):
@@ -139,14 +148,14 @@ if __name__ == '__main__':
     
     import os
 
-    path = '/mnt/e/paper/VectorNet/test_obs/data/'
+    path = 'data/argoverse-forecasting/val/data/'
     nameList = []
     for root, dirs, files in os.walk(path):
         nameList = files
     cnt = 0
-    for name in nameList:
-        work(path + name,name, '/mnt/e/paper/VectorNet/test_obs/data-final/')
+    for name in tqdm(nameList):
+        work(path + name, name, 'data/argoverse-forecasting/val/data-final/')
         cnt += 1
-        if cnt == 10:
-            break
+        # if cnt == 10:
+        #     break
 

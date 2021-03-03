@@ -42,22 +42,22 @@ class Attention(nn.Module):
 
         batchSize, n, C = P.shape
 
-        Q = torch.zeros(0, C).to(device)
+        # Q = torch.zeros(0, C).to(device)
 
-        Qt = self.linear[0](P)  # [batch size, n, C]
-        for i in range(id.shape[0]):
-            x = id[i].item()
-            q = Qt[i, x].unsqueeze(0)  # [1, C]
-            Q = torch.cat((Q, q), dim=0)
-        Q.unsqueeze_(1)  # Q's shape is # [batch size, 1, C]
+        # Qt = self.linear[0](P)  # [batch size, n, C]
+        # for i in range(id.shape[0]):
+        #     x = id[i].item()
+        #     q = Qt[i, x].unsqueeze(0)  # [1, C]
+        #     Q = torch.cat((Q, q), dim=0)
+        # Q.unsqueeze_(1)  # Q's shape is # [batch size, 1, C]
 
-        # Q = self.linear[0](P) #!!!
+        Q = self.linear[0](P) #!!! -> [batch size, n, C]
         K = self.linear[1](P)  # [batch size, n, C]
         V = self.linear[2](P)
 
-        ans = torch.matmul(Q, K.permute(0, 2, 1))  # [batch size, 1, n]
+        ans = torch.matmul(Q, K.permute(0, 2, 1))  # [batch size, 1, n] -> [batch size, n, n]
         ans = F.softmax(ans, dim=2)
-        ans = torch.matmul(ans, V)  # [batch size, 1, C]
+        ans = torch.matmul(ans, V)  # [batch size, 1, C] -> [batch size, n, n]
 
         ans.squeeze_(1)
 

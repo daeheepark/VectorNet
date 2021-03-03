@@ -297,8 +297,8 @@ if __name__ == '__main__':
     parser.add_argument("--learning_rate", dest="lr", default=0.001, type=float)
     args = parser.parse_args()
 
-    # train(epoch=args.epoch, learningRate=args.lr, batchSize=args.batch_size)
-    test(batchSize=args.batch_size)
+    train(epoch=args.epoch, learningRate=args.lr, batchSize=args.batch_size)
+    # test(batchSize=args.batch_size)
     # testCV(batchSize=args.batch_size)
 
     # random_train(epoch=args.epoch, learningRate=args.lr, batchSize=args.batch_size)
